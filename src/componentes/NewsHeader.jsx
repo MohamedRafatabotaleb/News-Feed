@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import React from "react";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
@@ -14,6 +14,7 @@ const Search = styled("div")(({ theme }) => ({
   marginLeft: "auto",
   width: 200,
 }));
+
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
   height: "100%",
@@ -32,8 +33,29 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     width: "100%",
   },
 }));
+
+const StyledSelect = styled(Select)(({ theme }) => ({
+  color: theme.palette.action,
+  backgroundColor: theme.palette.common.white,
+  "&:before": {
+    borderColor: theme.palette.action,
+  },
+  "&:after": {
+    borderColor: theme.palette.action,
+  },
+  "& .MuiSelect-icon": {
+    color: theme.palette.action,
+  },
+  margin: theme.spacing(2),
+  width: 200,
+  height: 40,
+}));
+const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
 function NewsHeader(props) {
-  const { onSearchChange } = props;
+  const { onSearchChange, category, onCategoryChange } = props;
 
   const handleInputChange = (event) => {
     onSearchChange(event.target.value);
@@ -43,6 +65,15 @@ function NewsHeader(props) {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6">Newsfeed App</Typography>
+        <StyledSelect value={category} onChange={onCategoryChange}>
+          <StyledMenuItem value="general">General</StyledMenuItem>
+          <StyledMenuItem value="business">Business</StyledMenuItem>
+          <StyledMenuItem value="entertainment">Entertainment</StyledMenuItem>
+          <StyledMenuItem value="health">Health</StyledMenuItem>
+          <StyledMenuItem value="science">Science</StyledMenuItem>
+          <StyledMenuItem value="sports">Sports</StyledMenuItem>
+          <StyledMenuItem value="technology">Technology</StyledMenuItem>
+        </StyledSelect>
         <Search>
           <SearchIconWrapper>
             <SearchIcon color="action" />
