@@ -1,0 +1,119 @@
+import { Container, Button, Typography } from "@mui/material";
+
+import { useEffect, useRef, useState } from "react";
+import NewsHeader from "./componentes/NewsHeader";
+import NewsFeed from "./componentes/NewsFeed";
+import { debounce } from "lodash";
+import { styled } from "@mui/material/styles";
+
+const Footer = styled("div")(({ theme }) => ({
+  margin: theme.spacing(2, 0),
+
+  display: "flex",
+  justifyContent: "space-between",
+}));
+
+const PAGE_SIZE = 4;
+
+function App() {
+  const [articles, setArticles] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+
+  const pageNumber = useRef(1);
+
+  const queryValue = useRef("");
+
+  async function loadData() {
+    const response = await fetch(
+      `https://newsapi.org/v2/top-headlines?q=${queryValue.current}&page=${
+        pageNumber.current
+      }&pageSize=${PAGE_SIZE}&country=us&apiKey=${
+        import.meta.env.VITE_NEWS_API_KEY
+      }`
+    );
+    const data = await response.json();
+
+    if (data.status === "error") {
+      throw new Error("An errorr has ocurred");
+    }
+
+    return (data.articles || []).map((article) => {
+      const { author, title, description, urlToImage, publishedAt } = article;
+      return {
+        author,
+        title,
+        description,
+        image: urlToImage,
+        publishedAt,
+      };
+    });
+  }
+
+  const fetchAndUpdateArticles = () => {
+    setLoading(true);
+    setError("");
+    loadData()
+      .then((newData) => {
+        setArticles(newData);
+        setLoading(false);
+      })
+      .catch((errorMessage) => setError(errorMessage.message))
+      .finally(() => setLoading(false));
+  };
+
+  const debouncedLoadData = debounce(fetchAndUpdateArticles, 500);
+
+  useEffect(() => {
+    fetchAndUpdateArticles();
+  }, []);
+
+  const handleSearchChange = (newQuery) => {
+    pageNumber.current = 1;
+    queryValue.current = newQuery;
+    debouncedLoadData();
+  };
+
+  const handleNextClick = () => {
+    pageNumber.current += 1;
+    fetchAndUpdateArticles();
+  };
+
+  const handlePreviousClick = () => {
+    pageNumber.current -= 1;
+    fetchAndUpdateArticles();
+  };
+
+  return (
+    <Container>
+      <NewsHeader onSearchChange={handleSearchChange} />
+      {error.length === 0 ? (
+        <NewsFeed articles={articles} loading={loading} />
+      ) : (
+        <Typography color="error" variant="h6" align="center">
+          {error}
+        </Typography>
+      )}
+      <Footer>
+        <Button
+          variant="outlined"
+          onClick={handlePreviousClick}
+          disabled={loading || pageNumber.current === 1}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={handleNextClick}
+          disabled={loading || articles.length < PAGE_SIZE}
+        >
+          Next
+        </Button>
+      </Footer>
+    </Container>
+  );
+}
+
+export default App;
