@@ -41,6 +41,9 @@ function App() {
       `https://newsapi.org/v2/top-headlines?category=${currentCategory}& q=${queryValue.current}&page=${pageNumber.current}&pageSize=${PAGE_SIZE}&country=us&apiKey=defa10f23e6547589a7acf46643df63b`
     );
 
+    const MRCC =
+      "https://newsapi.org/v2/top-headlines?category=general& q=&page=1&pageSize=4&country=us&apiKey=defa10f23e6547589a7acf46643df63b";
+
     const data = await response.json();
 
     if (data.status === "error") {
