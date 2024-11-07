@@ -29,13 +29,18 @@ function App() {
   const queryValue = useRef("");
 
   async function loadData(currentCategory) {
-    const response = await fetch(
+    /*  const response = await fetch(
       `https://newsapi.org/v2/top-headlines?category=${currentCategory}& q=${
         queryValue.current
       }&page=${pageNumber.current}&pageSize=${PAGE_SIZE}&country=us&apiKey=${
         import.meta.env.VITE_NEWS_API_KEY
       }`
+    ); */
+
+    const response = await fetch(
+      `https://newsapi.org/v2/top-headlines?category=${currentCategory}& q=${queryValue.current}&page=${pageNumber.current}&pageSize=${PAGE_SIZE}&country=us&apiKey=defa10f23e6547589a7acf46643df63b`
     );
+
     const data = await response.json();
 
     if (data.status === "error") {
